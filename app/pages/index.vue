@@ -171,10 +171,10 @@ function onSpinComplete(index: number) {
         </div>
       </header>
 
-      <div class="grid grid-cols-1 gap-6 lg:grid-cols-[380px_1fr]">
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-6 xl:grid-cols-12">
 
         <!-- left column -->
-        <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-6 md:col-span-2 xl:col-span-4">
           <Card>
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
@@ -249,7 +249,7 @@ function onSpinComplete(index: number) {
         </div>
 
         <!-- right column -->
-        <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-6 md:col-span-4 xl:col-span-8">
           <Card>
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
@@ -279,7 +279,7 @@ function onSpinComplete(index: number) {
 
           <Card>
             <CardHeader>
-              <div class="flex items-start justify-between gap-4">
+              <div class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
                 <div>
                   <CardTitle class="flex items-center gap-2">
                     <ScrollText class="h-4 w-4 text-primary" />
@@ -287,7 +287,7 @@ function onSpinComplete(index: number) {
                   </CardTitle>
                   <CardDescription v-if="!winners.length">No draws have been made yet.</CardDescription>
                 </div>
-                <div v-if="winners.length" class="flex gap-2">
+                <div v-if="winners.length" class="flex flex-wrap gap-2">
                   <Button variant="outline" size="sm" @click="exportLogCsv">
                     <Download class="h-4 w-4" />
                     Export CSV
