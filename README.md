@@ -1,92 +1,91 @@
-# Iv Loterij
+# Lottery
 
-Een trekkingsinstrument om uit een lijst deelnemers een winnaar te trekken via een
-draaiend rad — gebouwd met Vue 3, Nuxt 4 en shadcn-vue, in de huisstijl van Iv
-(donkere achtergrond, groen accent `#78c864`, witte tekst).
+An app to draw a winner from a list of participants via a spinning
+wheel — built with Vue 3, Nuxt 4 and shadcn-vue, in Iv's branding
 
-## Functionaliteit
+## Features
 
-- Deelnemerslijst invoeren (één naam per regel), individueel verwijderen via chips
-- Prijs instellen per trekking ("wat is er te winnen")
-- Rad draaien met een vloeiende, vertragende animatie naar een willekeurige winnaar
-- Winnaar-dialoog met naam en prijs
-- Trekkingslogboek met naam, prijs en tijdstip per trekking
-- Optie om de winnaar automatisch uit de pool te verwijderen, zodat je meerdere
-  prijzen achter elkaar kunt trekken zonder herhaling
+- Enter a participant list (one name per line), remove individually via chips
+- Set a prize per draw ("what is there to win")
+- Spin the wheel with a smooth, decelerating animation to a random winner
+- Winner dialog with name and prize
+- Log with name, prize and time per draw
+- Option to automatically remove the winner from the pool, so you can draw
+  multiple prizes in a row without repeats
 
-## Projectstructuur
+## Project structure
 
 ```
 app/
-  assets/css/tailwind.css   Tailwind v4 theme (Iv-kleuren)
+  assets/css/tailwind.css   Tailwind v4 theme (Iv colors)
   components/
-    ui/                     shadcn-vue componenten (Button, Card, Dialog, Table, ...)
-    LotteryWheel.vue         Canvas-rad component
+    ui/                     shadcn-vue components (Button, Card, Dialog, Table, ...)
+    LotteryWheel.vue         Canvas wheel component
   composables/
-    useLottery.ts            State: deelnemers, prijs, trekkingslogboek
+    useLottery.ts            State: participants, prize, draw log
   utils/
-    wheel.ts                 Pure logica: namen parsen, winnaar kiezen, rotatie berekenen
+    wheel.ts                 Pure logic: parsing names, choosing a winner, calculating rotation
   pages/
-    index.vue                Hoofdpagina
-tests/unit/                  Vitest unit tests voor utils/ en composables/
-.github/workflows/deploy.yml GitHub Actions workflow voor GitHub Pages
+    index.vue                Main page
+tests/unit/                  Vitest unit tests for utils/ and composables/
+.github/workflows/deploy.yml GitHub Actions workflow for GitHub Pages
 ```
 
-## Lokaal draaien
+## Running locally
 
-Vereist Node.js 20+.
+Requires Node.js 22+.
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
-De app draait daarna op http://localhost:3000.
+The app then runs on http://localhost:3000.
 
-## Testen
+## Testing
 
-Unit tests draaien met [Vitest](https://vitest.dev):
+Unit tests run with [Vitest](https://vitest.dev):
 
 ```bash
-npm run test        # eenmalig
-npm run test:watch  # watch mode
+pnpm test        # once
+pnpm test:watch  # watch mode
 ```
 
-De tests dekken de kernlogica: het parsen van de deelnemerslijst, het willekeurig
-kiezen van een winnaar, de rotatieberekening van het rad, en de composable die de
-trekkingsstate (deelnemers, prijs, logboek) beheert.
+The tests cover the core logic: parsing the participant list, randomly
+choosing a winner, the wheel's rotation calculation, and the composable that
+manages the draw state (participants, prize, log).
 
-## Hosten op GitHub Pages
+## Hosting on GitHub Pages
 
-Deze repo bevat een kant-en-klare workflow (`.github/workflows/deploy.yml`) die bij
-elke push naar `main`:
+This repo contains a ready-to-use workflow (`.github/workflows/deploy.yml`) that,
+on every push to `main`:
 
-1. de unit tests draait,
-2. de site statisch bouwt met `nuxt build --preset github_pages`,
-3. het resultaat publiceert naar GitHub Pages via de officiële
+1. runs the unit tests,
+2. statically builds the site with `nuxt build --preset github_pages`,
+3. publishes the result to GitHub Pages via the official
    [`actions/deploy-pages`](https://github.com/actions/deploy-pages) action.
 
-### Eenmalige instellingen
+### One-time setup
 
-1. Zet in de repository-instellingen **Settings → Pages → Source** op **GitHub
+1. In the repository settings, set **Settings → Pages → Source** to **GitHub
    Actions**.
-2. Push naar `main` (of start de workflow handmatig via **Actions → Deploy naar
+2. Push to `main` (or start the workflow manually via **Actions → Deploy to
    GitHub Pages → Run workflow**).
-3. De site komt beschikbaar op `https://<gebruikersnaam>.github.io/<repository-naam>/`.
+3. The site will become available at `https://<username>.github.io/<repository-name>/`.
 
-De workflow leidt de base-URL automatisch af uit de repository-naam
-(`NUXT_APP_BASE_URL: /${{ github.event.repository.name }}/`). Gebruik je een custom
-domain, verwijder dan die regel (of zet de waarde op `/`).
+The workflow automatically derives the base URL from the repository name
+(`NUXT_APP_BASE_URL: /${{ github.event.repository.name }}/`). If you use a custom
+domain, remove that line (or set the value to `/`).
 
-### Lokaal een productie-build simuleren
+### Simulating a production build locally
 
 ```bash
 NUXT_APP_BASE_URL=/iv-loterij/ npx nuxt build --preset github_pages
 npx serve .output/public
 ```
 
-## Het logo en de kleuren aanpassen
+## Customizing the logo and colors
 
-- Logo: vervang `public/iv-logo.png`.
-- Kleuren: pas de CSS-variabelen aan in `app/assets/css/tailwind.css`
+- Logo: replace `public/logo.png`.
+- Colors: adjust the CSS variables in `app/assets/css/tailwind.css`
   (`--background`, `--primary`/`--accent`, etc.).

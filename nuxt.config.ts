@@ -11,12 +11,12 @@ export default defineNuxtConfig({
   app: {
     baseURL: process.env.NUXT_APP_BASE_URL || '/',
     head: {
-      title: 'Iv Loterij',
+      title: 'Loterij',
       meta: [
-        { name: 'description', content: 'Trekkingsinstrument voor prijzen en winnaars.' }
+        { name: 'description', content: 'Loterij voor prijzen en winnaars.' }
       ],
       link: [
-        { rel: 'icon', type: 'image/png', href: 'iv-logo.png' },
+        { rel: 'icon', type: 'image/png', href: 'logo.png' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap' }

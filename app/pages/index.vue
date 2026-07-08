@@ -55,19 +55,19 @@ function onSpinComplete(index: number) {
       <!-- header -->
       <header class="mb-8 flex flex-wrap items-center justify-between gap-6 border-b border-border pb-6">
         <div class="flex items-center gap-4">
-          <img src="/iv-logo.png" alt="Iv logo" class="h-12 w-12" />
+          <img src="/logo.svg" alt="Iv logo" class="h-12 w-12" />
           <div>
-            <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">Trekkingsinstrument</p>
-            <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Iv Loterij</h1>
+            <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">ONE</p>
+            <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Lottery</h1>
           </div>
         </div>
         <div class="flex gap-8 font-mono text-sm">
           <div>
-            <p class="text-muted-foreground">Deelnemers</p>
+            <p class="text-muted-foreground">Participants</p>
             <p class="text-2xl font-semibold">{{ participants.length }}</p>
           </div>
           <div>
-            <p class="text-muted-foreground">Trekkingen</p>
+            <p class="text-muted-foreground">Draws</p>
             <p class="text-2xl font-semibold">{{ drawCount }}</p>
           </div>
         </div>
@@ -79,14 +79,14 @@ function onSpinComplete(index: number) {
         <div class="flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>01 &middot; Deelnemerslijst</CardTitle>
-              <CardDescription>Eén naam per regel.</CardDescription>
+              <CardTitle>01 &middot; Participant list</CardTitle>
+              <CardDescription>One name per line.</CardDescription>
             </CardHeader>
             <CardContent class="flex flex-col gap-4">
               <Textarea v-model="namesText" placeholder="Amber&#10;Peter&#10;Nina" :rows="6" />
               <div class="flex flex-wrap gap-2">
-                <Button variant="default" @click="applyNames">Lijst bijwerken</Button>
-                <Button variant="outline" @click="clearAll">Alles wissen</Button>
+                <Button variant="default" @click="applyNames">Update list</Button>
+                <Button variant="outline" @click="clearAll">Clear all</Button>
               </div>
 
               <div v-if="participants.length" class="flex max-h-44 flex-wrap gap-2 overflow-y-auto pr-1">
@@ -99,7 +99,7 @@ function onSpinComplete(index: number) {
                   <button
                     type="button"
                     class="rounded px-1.5 text-muted-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    :aria-label="`Verwijder ${name}`"
+                    :aria-label="`Remove ${name}`"
                     @click="removeParticipant(idx)"
                   >
                     &times;
@@ -110,7 +110,7 @@ function onSpinComplete(index: number) {
               <div class="flex items-center gap-3 pt-1">
                 <Checkbox v-model="autoRemoveWinner" id="auto-remove" />
                 <Label for="auto-remove" class="font-mono text-xs text-muted-foreground">
-                  Winnaar automatisch uit de lijst verwijderen na trekking
+                  Automatically remove winner from the list after the draw
                 </Label>
               </div>
             </CardContent>
@@ -118,11 +118,11 @@ function onSpinComplete(index: number) {
 
           <Card>
             <CardHeader>
-              <CardTitle>02 &middot; Prijs</CardTitle>
-              <CardDescription>Wat is er te winnen bij deze trekking?</CardDescription>
+              <CardTitle>02 &middot; Prize</CardTitle>
+              <CardDescription>What is there to win in this draw?</CardDescription>
             </CardHeader>
             <CardContent>
-              <Input v-model="prize" placeholder="Bijv. een bioscoopbon" />
+              <Input v-model="prize" placeholder="E.g. a movie voucher" />
             </CardContent>
           </Card>
         </div>
@@ -131,11 +131,11 @@ function onSpinComplete(index: number) {
         <div class="flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>03 &middot; Trekking</CardTitle>
+              <CardTitle>03 &middot; Draw</CardTitle>
               <CardDescription v-if="prize">
-                Te winnen: <span class="text-foreground">{{ prize }}</span>
+                To win: <span class="text-foreground">{{ prize }}</span>
               </CardDescription>
-              <CardDescription v-else>Vul eerst in wat er te winnen is (optioneel).</CardDescription>
+              <CardDescription v-else>First fill in what there is to win (optional).</CardDescription>
             </CardHeader>
             <CardContent class="flex flex-col items-center gap-6">
               <LotteryWheel
@@ -145,27 +145,27 @@ function onSpinComplete(index: number) {
                 @spin-complete="onSpinComplete"
               />
               <p v-if="!canDraw" class="font-mono text-sm text-muted-foreground">
-                Voeg minimaal 2 namen toe om te kunnen trekken.
+                Add at least 2 names to be able to draw.
               </p>
               <Button size="lg" :disabled="!canDraw || isSpinning" @click="draw">
-                {{ isSpinning ? 'Rad draait…' : 'Trek een winnaar' }}
+                {{ isSpinning ? 'Wheel spinning…' : 'Draw a winner' }}
               </Button>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>04 &middot; Trekkingslogboek</CardTitle>
-              <CardDescription v-if="!winners.length">Nog geen trekkingen uitgevoerd.</CardDescription>
+              <CardTitle>04 &middot; Log</CardTitle>
+              <CardDescription v-if="!winners.length">No draws have been made yet.</CardDescription>
             </CardHeader>
             <CardContent v-if="winners.length">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead class="w-14">Nr.</TableHead>
-                    <TableHead>Naam</TableHead>
-                    <TableHead>Prijs</TableHead>
-                    <TableHead class="w-28">Tijd</TableHead>
+                    <TableHead class="w-14">No.</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Prize</TableHead>
+                    <TableHead class="w-28">Time</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -189,16 +189,16 @@ function onSpinComplete(index: number) {
     <Dialog v-model:open="showWinnerDialog">
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Winnaar getrokken</DialogTitle>
-          <DialogDescription>Trekking #{{ lastWinner?.drawNumber }}</DialogDescription>
+          <DialogTitle>Winner drawn</DialogTitle>
+          <DialogDescription>Draw #{{ lastWinner?.drawNumber }}</DialogDescription>
         </DialogHeader>
         <div class="py-4 text-center">
           <p class="text-3xl font-bold text-primary">{{ lastWinner?.name }}</p>
-          <p class="mt-2 text-muted-foreground">wint: <span class="text-foreground">{{ lastWinner?.prize }}</span></p>
+          <p class="mt-2 text-muted-foreground">wins: <span class="text-foreground">{{ lastWinner?.prize }}</span></p>
         </div>
         <DialogFooter>
           <DialogClose>
-            <Button class="w-full sm:w-auto">Sluiten</Button>
+            <Button class="w-full sm:w-auto">Close</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
