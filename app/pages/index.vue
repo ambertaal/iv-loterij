@@ -43,6 +43,7 @@ async function applyNames() {
 }
 
 function clearAll() {
+  if (!window.confirm('Clear all participants for everyone? This cannot be undone.')) return
   namesText.value = ''
   clearParticipants()
   clearSharedNames()
