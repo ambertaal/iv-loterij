@@ -13,7 +13,7 @@ const {
   recordWinner
 } = useLottery()
 
-const namesText = ref('Amber\nJeroen\nCas\nNina')
+const namesText = ref('Amber\nPeter\nNina')
 setParticipantsFromText(namesText.value)
 
 function applyNames() {
@@ -83,7 +83,7 @@ function onSpinComplete(index: number) {
               <CardDescription>Eén naam per regel.</CardDescription>
             </CardHeader>
             <CardContent class="flex flex-col gap-4">
-              <Textarea v-model="namesText" placeholder="Amber&#10;Jeroen&#10;Cas&#10;Nina" :rows="6" />
+              <Textarea v-model="namesText" placeholder="Amber&#10;Peter&#10;Nina" :rows="6" />
               <div class="flex flex-wrap gap-2">
                 <Button variant="default" @click="applyNames">Lijst bijwerken</Button>
                 <Button variant="outline" @click="clearAll">Alles wissen</Button>

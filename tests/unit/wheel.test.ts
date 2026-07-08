@@ -3,11 +3,11 @@ import { parseNames, pickWinnerIndex, computeSpinTarget, easeOutSpin } from '~/u
 
 describe('parseNames', () => {
   it('splits on newlines and trims whitespace', () => {
-    expect(parseNames('Amber\n  Jeroen \nCas')).toEqual(['Amber', 'Jeroen', 'Cas'])
+    expect(parseNames('Amber\n  Peter \nNina')).toEqual(['Amber', 'Peter', 'Nina'])
   })
 
   it('drops empty lines', () => {
-    expect(parseNames('Amber\n\n\nJeroen\n')).toEqual(['Amber', 'Jeroen'])
+    expect(parseNames('Amber\n\n\nPeter\n')).toEqual(['Amber', 'Peter'])
   })
 
   it('returns an empty array for blank input', () => {
