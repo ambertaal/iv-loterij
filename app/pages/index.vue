@@ -23,6 +23,44 @@ function applyNames() {
 function clearAll() {
   namesText.value = ''
   clearParticipants()
+  clearSharedNames()
+}
+
+// Public sign-up: anyone with the page link can add their own name to a
+// shared, realtime list (Firebase Realtime Database), which is then
+// auto-merged into the local draw pool above for every viewer (see watch
+// below).
+const { sharedEntries, addSharedName, clearSharedNames } = useSharedParticipants()
+const joinName = ref('')
+const shareUrl = ref('')
+
+onMounted(() => {
+  shareUrl.value = window.location.href
+})
+
+async function submitJoin() {
+  if (!joinName.value.trim()) return
+  await addSharedName(joinName.value)
+  joinName.value = ''
+}
+
+function importSharedNames() {
+  const existing = new Set(participants.value.map((n) => n.toLowerCase()))
+  const newNames = sharedEntries.value
+    .map((e) => e.name)
+    .filter((name) => !existing.has(name.toLowerCase()))
+  if (!newNames.length) return
+  namesText.value = [namesText.value, ...newNames].filter(Boolean).join('\n')
+  applyNames()
+}
+
+// Auto-sync sign-ups into the draw list for every viewer as they arrive,
+// so the host never has to manually pull names in.
+watch(sharedEntries, importSharedNames)
+
+async function copyShareUrl() {
+  if (!shareUrl.value) return
+  await navigator.clipboard.writeText(shareUrl.value)
 }
 
 const wheelRef = ref<{ spin: (index: number) => void } | null>(null)
@@ -79,11 +117,24 @@ function onSpinComplete(index: number) {
         <div class="flex flex-col gap-6">
           <Card>
             <CardHeader>
+              <CardTitle>00 &middot; Add your name</CardTitle>
+              <CardDescription>Want to join the lottery?</CardDescription>
+            </CardHeader>
+            <CardContent class="flex flex-col gap-4">
+              <form class="flex gap-2" @submit.prevent="submitJoin">
+                <Input v-model="joinName" placeholder="Your name" maxlength="40" />
+                <Button type="submit" :disabled="!joinName.trim()">Add me</Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle>01 &middot; Participant list</CardTitle>
               <CardDescription>One name per line.</CardDescription>
             </CardHeader>
             <CardContent class="flex flex-col gap-4">
-              <Textarea v-model="namesText" placeholder="Amber&#10;Peter&#10;Nina" :rows="6" />
+              <Textarea v-model="namesText" :rows="6" />
               <div class="flex flex-wrap gap-2">
                 <Button variant="default" @click="applyNames">Update list</Button>
                 <Button variant="outline" @click="clearAll">Clear all</Button>
@@ -165,7 +216,7 @@ function onSpinComplete(index: number) {
                     <TableHead class="w-14">No.</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Prize</TableHead>
-                    <TableHead class="w-28">Time</TableHead>
+                    <TableHead class="w-40">Date &amp; time</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -175,7 +226,7 @@ function onSpinComplete(index: number) {
                     <TableCell>
                       <Badge variant="secondary">{{ w.prize }}</Badge>
                     </TableCell>
-                    <TableCell class="font-mono text-muted-foreground">{{ w.time }}</TableCell>
+                    <TableCell class="font-mono text-muted-foreground">{{ w.date }} {{ w.time }}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>

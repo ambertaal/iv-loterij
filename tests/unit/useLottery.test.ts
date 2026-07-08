@@ -49,7 +49,7 @@ describe('useLottery', () => {
     const lottery = useLottery()
     lottery.setParticipantsFromText('Amber\nPeter')
     const entry = lottery.recordWinner(0)
-    expect(entry.prize).toBe('Niet gespecificeerd')
+    expect(entry.prize).toBe('Not specified')
   })
 
   it('removes the winner from the pool when auto-remove is enabled (default)', () => {

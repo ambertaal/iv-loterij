@@ -6,6 +6,7 @@ export interface WinnerEntry {
   drawNumber: number
   name: string
   prize: string
+  date: string
   time: string
 }
 
@@ -57,7 +58,8 @@ export function useLottery() {
       id: `${Date.now()}-${index}-${Math.random().toString(36).slice(2, 8)}`,
       drawNumber: drawCount.value + 1,
       name,
-      prize: prize.value.trim() || 'Niet gespecificeerd',
+      prize: prize.value.trim() || 'Not specified',
+      date: new Date().toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' }),
       time: new Date().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
     }
     winners.value.unshift(entry)
