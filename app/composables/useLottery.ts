@@ -50,13 +50,16 @@ export function useLottery() {
 
   /**
    * Confirm a winner: adds it to the log with the currently configured prize,
-   * and removes it from the pool when auto-remove is enabled.
+   * and removes it from the pool when auto-remove is enabled. `drawNumber`
+   * can be overridden by the caller (e.g. based on a shared/synced count) so
+   * numbering stays consistent across visitors instead of this composable's
+   * own, per-tab-only `winners` log.
    */
-  function recordWinner(index: number): WinnerEntry {
+  function recordWinner(index: number, drawNumber?: number): WinnerEntry {
     const name = participants.value[index]
     const entry: WinnerEntry = {
       id: `${Date.now()}-${index}-${Math.random().toString(36).slice(2, 8)}`,
-      drawNumber: drawCount.value + 1,
+      drawNumber: drawNumber ?? drawCount.value + 1,
       name,
       prize: prize.value.trim() || 'Not specified',
       date: new Date().toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' }),

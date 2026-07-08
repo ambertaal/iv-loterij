@@ -3,8 +3,6 @@ const {
   participants,
   prize,
   autoRemoveWinner,
-  winners,
-  drawCount,
   canDraw,
   setParticipantsFromText,
   removeParticipant,
@@ -13,7 +11,13 @@ const {
   recordWinner
 } = useLottery()
 
-const namesText = ref('Amber\nPeter\nNina')
+// Shared, realtime winner log (Firebase Realtime Database): every draw is
+// pushed here so all visitors see the same history instead of each tab only
+// seeing its own local draws.
+const { sharedWinners: winners, pushWinner } = useSharedWinners()
+const drawCount = computed(() => winners.value.length)
+
+const namesText = ref('')
 setParticipantsFromText(namesText.value)
 
 function applyNames() {
@@ -80,9 +84,10 @@ function onSpinStart() {
 
 function onSpinComplete(index: number) {
   isSpinning.value = false
-  const entry = recordWinner(index)
+  const entry = recordWinner(index, winners.value.length + 1)
   lastWinner.value = { name: entry.name, prize: entry.prize, drawNumber: entry.drawNumber }
   showWinnerDialog.value = true
+  pushWinner({ drawNumber: entry.drawNumber, name: entry.name, prize: entry.prize, date: entry.date, time: entry.time })
 }
 </script>
 
