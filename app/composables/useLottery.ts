@@ -19,7 +19,6 @@ export interface WinnerEntry {
 export function useLottery() {
   const participants = ref<string[]>([])
   const prize = ref<string>('')
-  const autoRemoveWinner = ref<boolean>(true)
   const winners = ref<WinnerEntry[]>([])
 
   const drawCount = computed(() => winners.value.length)
@@ -50,10 +49,10 @@ export function useLottery() {
 
   /**
    * Confirm a winner: adds it to the log with the currently configured prize,
-   * and removes it from the pool when auto-remove is enabled. `drawNumber`
-   * can be overridden by the caller (e.g. based on a shared/synced count) so
-   * numbering stays consistent across visitors instead of this composable's
-   * own, per-tab-only `winners` log.
+   * and removes it from the pool. `drawNumber` can be overridden by the
+   * caller (e.g. based on a shared/synced count) so numbering stays
+   * consistent across visitors instead of this composable's own,
+   * per-tab-only `winners` log.
    */
   function recordWinner(index: number, drawNumber?: number): WinnerEntry {
     const name = participants.value[index]
@@ -66,10 +65,7 @@ export function useLottery() {
       time: new Date().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
     }
     winners.value.unshift(entry)
-
-    if (autoRemoveWinner.value) {
-      removeParticipant(index)
-    }
+    removeParticipant(index)
 
     return entry
   }
@@ -81,7 +77,6 @@ export function useLottery() {
   return {
     participants,
     prize,
-    autoRemoveWinner,
     winners,
     drawCount,
     canDraw,

@@ -52,28 +52,19 @@ describe('useLottery', () => {
     expect(entry.prize).toBe('Not specified')
   })
 
-  it('removes the winner from the pool when auto-remove is enabled (default)', () => {
+  it('removes the winner from the pool after each draw', () => {
     const lottery = useLottery()
     lottery.setParticipantsFromText('Amber\nPeter\nNina')
     lottery.recordWinner(0)
     expect(lottery.participants.value).toEqual(['Peter', 'Nina'])
   })
 
-  it('keeps the winner in the pool when auto-remove is disabled', () => {
-    const lottery = useLottery()
-    lottery.setParticipantsFromText('Amber\nPeter\nNina')
-    lottery.autoRemoveWinner.value = false
-    lottery.recordWinner(0)
-    expect(lottery.participants.value).toEqual(['Amber', 'Peter', 'Nina'])
-  })
-
   it('prepends new winners so the log is newest-first', () => {
     const lottery = useLottery()
     lottery.setParticipantsFromText('Amber\nPeter\nNina')
-    lottery.autoRemoveWinner.value = false
 
-    lottery.recordWinner(0) // Amber
-    lottery.recordWinner(1) // Peter
+    lottery.recordWinner(0) // Amber, leaves [Peter, Nina]
+    lottery.recordWinner(0) // Peter, leaves [Nina]
 
     expect(lottery.winners.value.map((w) => w.name)).toEqual(['Peter', 'Amber'])
     expect(lottery.winners.value.map((w) => w.drawNumber)).toEqual([2, 1])

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { UserPlus, Users, Gift, Sparkles, ScrollText } from '@lucide/vue'
+import { UserPlus, Users, Gift, Sparkles, ScrollText, PartyPopper } from '@lucide/vue'
 
 const {
   participants,
   prize,
-  autoRemoveWinner,
   canDraw,
   setParticipantsFromText,
   removeParticipant,
@@ -195,13 +194,6 @@ function onSpinComplete(index: number) {
                   </button>
                 </span>
               </div>
-
-              <div class="flex items-center gap-3 pt-1">
-                <Checkbox v-model="autoRemoveWinner" id="auto-remove" />
-                <Label for="auto-remove" class="font-mono text-xs text-muted-foreground">
-                  Automatically remove winner from the list after the draw
-                </Label>
-              </div>
             </CardContent>
           </Card>
 
@@ -292,13 +284,21 @@ function onSpinComplete(index: number) {
           </Card>
         </div>
       </div>
+
+      <!-- footer -->
+      <footer class="mt-10 border-t border-border pt-6 text-center font-mono text-xs text-muted-foreground">
+        Made by Nina &amp; Amber
+      </footer>
     </div>
 
     <!-- winner dialog -->
     <Dialog v-model:open="showWinnerDialog">
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Winner drawn</DialogTitle>
+        <DialogHeader class="items-center text-center">
+          <div class="flex h-16 w-16 items-center justify-center rounded-full bg-primary/15">
+            <PartyPopper class="h-8 w-8 text-primary" />
+          </div>
+          <DialogTitle class="text-xl">We have a winner!</DialogTitle>
           <DialogDescription>Draw #{{ lastWinner?.drawNumber }}</DialogDescription>
         </DialogHeader>
         <div class="py-4 text-center">
