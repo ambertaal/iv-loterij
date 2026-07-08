@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { UserPlus, Users, Gift, Sparkles, ScrollText } from '@lucide/vue'
+
 const {
   participants,
   prize,
@@ -147,7 +149,10 @@ function onSpinComplete(index: number) {
         <div class="flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>00 &middot; Add your name</CardTitle>
+              <CardTitle class="flex items-center gap-2">
+                <UserPlus class="h-4 w-4 text-primary" />
+                Add your name
+              </CardTitle>
               <CardDescription>Want to join the lottery?</CardDescription>
             </CardHeader>
             <CardContent class="flex flex-col gap-4">
@@ -160,7 +165,10 @@ function onSpinComplete(index: number) {
 
           <Card>
             <CardHeader>
-              <CardTitle>01 &middot; Participant list</CardTitle>
+              <CardTitle class="flex items-center gap-2">
+                <Users class="h-4 w-4 text-primary" />
+                Participant list
+              </CardTitle>
               <CardDescription>One name per line.</CardDescription>
             </CardHeader>
             <CardContent class="flex flex-col gap-4">
@@ -199,7 +207,10 @@ function onSpinComplete(index: number) {
 
           <Card>
             <CardHeader>
-              <CardTitle>02 &middot; Prize</CardTitle>
+              <CardTitle class="flex items-center gap-2">
+                <Gift class="h-4 w-4 text-primary" />
+                Prize
+              </CardTitle>
               <CardDescription>What is there to win in this draw?</CardDescription>
             </CardHeader>
             <CardContent>
@@ -218,7 +229,10 @@ function onSpinComplete(index: number) {
         <div class="flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>03 &middot; Draw</CardTitle>
+              <CardTitle class="flex items-center gap-2">
+                <Sparkles class="h-4 w-4 text-primary" />
+                Draw
+              </CardTitle>
               <CardDescription v-if="prize">
                 To win: <span class="text-foreground">{{ prize }}</span>
               </CardDescription>
@@ -244,7 +258,10 @@ function onSpinComplete(index: number) {
             <CardHeader>
               <div class="flex items-start justify-between gap-4">
                 <div>
-                  <CardTitle>04 &middot; Log</CardTitle>
+                  <CardTitle class="flex items-center gap-2">
+                    <ScrollText class="h-4 w-4 text-primary" />
+                    Log
+                  </CardTitle>
                   <CardDescription v-if="!winners.length">No draws have been made yet.</CardDescription>
                 </div>
                 <Button v-if="winners.length" variant="outline" size="sm" @click="clearLog">Clear log</Button>
