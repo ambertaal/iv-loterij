@@ -23,6 +23,7 @@ const prizeText = ref('')
 
 function applyPrize() {
   prize.value = prizeText.value.trim()
+  prizeText.value = ''
 }
 
 async function clearLog() {
