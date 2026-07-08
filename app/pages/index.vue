@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { UserPlus, Users, Gift, Sparkles, ScrollText, PartyPopper } from '@lucide/vue'
+import { UserPlus, Users, Gift, Sparkles, ScrollText, PartyPopper, Download } from '@lucide/vue'
+import { winnersToCsv } from '../utils/csv'
 
 const {
   participants,
@@ -28,6 +29,17 @@ async function clearLog() {
   if (!winners.value.length) return
   if (!window.confirm('Clear the entire winner log for everyone? This cannot be undone.')) return
   await clearSharedWinners()
+}
+
+function exportLogCsv() {
+  if (!winners.value.length) return
+  const csv = winnersToCsv(winners.value)
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }))
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `lottery-results-${new Date().toISOString().slice(0, 10)}.csv`
+  link.click()
+  URL.revokeObjectURL(url)
 }
 
 async function undoLastDraw() {
@@ -276,6 +288,10 @@ function onSpinComplete(index: number) {
                   <CardDescription v-if="!winners.length">No draws have been made yet.</CardDescription>
                 </div>
                 <div v-if="winners.length" class="flex gap-2">
+                  <Button variant="outline" size="sm" @click="exportLogCsv">
+                    <Download class="h-4 w-4" />
+                    Export CSV
+                  </Button>
                   <Button variant="outline" size="sm" @click="undoLastDraw">Undo last draw</Button>
                   <Button variant="outline" size="sm" @click="clearLog">Clear log</Button>
                 </div>
