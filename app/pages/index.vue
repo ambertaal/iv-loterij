@@ -54,16 +54,28 @@ function clearAll() {
 // below).
 const { sharedEntries, addSharedName, clearSharedNames, removeSharedName } = useSharedParticipants()
 const joinName = ref('')
-const shareUrl = ref('')
-
-onMounted(() => {
-  shareUrl.value = window.location.href
-})
+const justJoined = ref(false)
+const alreadyJoined = ref(false)
+let joinMessageTimeout: ReturnType<typeof setTimeout> | undefined
 
 async function submitJoin() {
-  if (!joinName.value.trim()) return
-  await addSharedName(joinName.value)
+  const trimmed = joinName.value.trim()
+  if (!trimmed) return
+
+  clearTimeout(joinMessageTimeout)
+  const isDuplicate = sharedEntries.value.some((e) => e.name.toLowerCase() === trimmed.toLowerCase())
+  if (isDuplicate) {
+    justJoined.value = false
+    alreadyJoined.value = true
+    joinMessageTimeout = setTimeout(() => { alreadyJoined.value = false }, 3000)
+    return
+  }
+
+  await addSharedName(trimmed)
   joinName.value = ''
+  alreadyJoined.value = false
+  justJoined.value = true
+  joinMessageTimeout = setTimeout(() => { justJoined.value = false }, 3000)
 }
 
 async function removeParticipantEverywhere(idx: number) {
@@ -87,11 +99,6 @@ function importSharedNames() {
 // Auto-sync sign-ups into the draw list for every viewer as they arrive,
 // so the host never has to manually pull names in.
 watch(sharedEntries, importSharedNames)
-
-async function copyShareUrl() {
-  if (!shareUrl.value) return
-  await navigator.clipboard.writeText(shareUrl.value)
-}
 
 const wheelRef = ref<{ spin: (index: number) => void } | null>(null)
 const isSpinning = ref(false)
@@ -159,6 +166,8 @@ function onSpinComplete(index: number) {
                 <Input v-model="joinName" placeholder="Your name" maxlength="40" />
                 <Button type="submit" :disabled="!joinName.trim()">Add me</Button>
               </form>
+              <p v-if="justJoined" class="font-mono text-xs text-primary">You're in! Good luck.</p>
+              <p v-else-if="alreadyJoined" class="font-mono text-xs text-muted-foreground">You're already on the list.</p>
             </CardContent>
           </Card>
 
