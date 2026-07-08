@@ -42,5 +42,10 @@ export function useSharedWinners() {
     await remove(listRef)
   }
 
-  return { sharedWinners, isLoading, pushWinner, clearSharedWinners }
+  async function removeWinner(id: string) {
+    if (!listRef) return
+    await remove(dbRef(db, `${SHARED_PATH}/${id}`))
+  }
+
+  return { sharedWinners, isLoading, pushWinner, clearSharedWinners, removeWinner }
 }

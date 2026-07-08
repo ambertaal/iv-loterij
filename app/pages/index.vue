@@ -15,7 +15,7 @@ const {
 // Shared, realtime winner log (Firebase Realtime Database): every draw is
 // pushed here so all visitors see the same history instead of each tab only
 // seeing its own local draws.
-const { sharedWinners: winners, pushWinner, clearSharedWinners } = useSharedWinners()
+const { sharedWinners: winners, pushWinner, clearSharedWinners, removeWinner } = useSharedWinners()
 const drawCount = computed(() => winners.value.length)
 
 const prizeText = ref('')
@@ -28,6 +28,15 @@ async function clearLog() {
   if (!winners.value.length) return
   if (!window.confirm('Clear the entire winner log for everyone? This cannot be undone.')) return
   await clearSharedWinners()
+}
+
+async function undoLastDraw() {
+  const last = winners.value[0]
+  if (!last) return
+  if (!window.confirm(`Undo draw #${last.drawNumber} (${last.name})? They'll be added back to the pool.`)) return
+  participants.value.push(last.name)
+  namesText.value = participants.value.join('\n')
+  await removeWinner(last.id)
 }
 
 const namesText = ref('')
@@ -266,7 +275,10 @@ function onSpinComplete(index: number) {
                   </CardTitle>
                   <CardDescription v-if="!winners.length">No draws have been made yet.</CardDescription>
                 </div>
-                <Button v-if="winners.length" variant="outline" size="sm" @click="clearLog">Clear log</Button>
+                <div v-if="winners.length" class="flex gap-2">
+                  <Button variant="outline" size="sm" @click="undoLastDraw">Undo last draw</Button>
+                  <Button variant="outline" size="sm" @click="clearLog">Clear log</Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent v-if="winners.length">
