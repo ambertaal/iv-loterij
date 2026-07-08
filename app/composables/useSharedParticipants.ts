@@ -48,5 +48,9 @@ export function useSharedParticipants() {
     await remove(listRef)
   }
 
-  return { sharedEntries, isLoading, addSharedName, clearSharedNames }
+  async function removeSharedName(id: string) {
+    await remove(dbRef(db, `${SHARED_PATH}/${id}`))
+  }
+
+  return { sharedEntries, isLoading, addSharedName, clearSharedNames, removeSharedName }
 }

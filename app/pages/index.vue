@@ -14,14 +14,31 @@ const {
 // Shared, realtime winner log (Firebase Realtime Database): every draw is
 // pushed here so all visitors see the same history instead of each tab only
 // seeing its own local draws.
-const { sharedWinners: winners, pushWinner } = useSharedWinners()
+const { sharedWinners: winners, pushWinner, clearSharedWinners } = useSharedWinners()
 const drawCount = computed(() => winners.value.length)
+
+const prizeText = ref('')
+
+function applyPrize() {
+  prize.value = prizeText.value.trim()
+}
+
+async function clearLog() {
+  if (!winners.value.length) return
+  if (!window.confirm('Clear the entire winner log for everyone? This cannot be undone.')) return
+  await clearSharedWinners()
+}
 
 const namesText = ref('')
 setParticipantsFromText(namesText.value)
 
-function applyNames() {
+async function applyNames() {
   setParticipantsFromText(namesText.value)
+  const existingShared = new Set(sharedEntries.value.map((e) => e.name.toLowerCase()))
+  const newNames = participants.value.filter((name) => !existingShared.has(name.toLowerCase()))
+  for (const name of newNames) {
+    await addSharedName(name)
+  }
 }
 
 function clearAll() {
@@ -34,7 +51,7 @@ function clearAll() {
 // shared, realtime list (Firebase Realtime Database), which is then
 // auto-merged into the local draw pool above for every viewer (see watch
 // below).
-const { sharedEntries, addSharedName, clearSharedNames } = useSharedParticipants()
+const { sharedEntries, addSharedName, clearSharedNames, removeSharedName } = useSharedParticipants()
 const joinName = ref('')
 const shareUrl = ref('')
 
@@ -46,6 +63,14 @@ async function submitJoin() {
   if (!joinName.value.trim()) return
   await addSharedName(joinName.value)
   joinName.value = ''
+}
+
+async function removeParticipantEverywhere(idx: number) {
+  const name = participants.value[idx]
+  removeParticipant(idx)
+  namesText.value = participants.value.join('\n')
+  const match = sharedEntries.value.find((e) => e.name.toLowerCase() === name?.toLowerCase())
+  if (match) await removeSharedName(match.id)
 }
 
 function importSharedNames() {
@@ -156,7 +181,7 @@ function onSpinComplete(index: number) {
                     type="button"
                     class="rounded px-1.5 text-muted-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     :aria-label="`Remove ${name}`"
-                    @click="removeParticipant(idx)"
+                    @click="removeParticipantEverywhere(idx)"
                   >
                     &times;
                   </button>
@@ -178,7 +203,13 @@ function onSpinComplete(index: number) {
               <CardDescription>What is there to win in this draw?</CardDescription>
             </CardHeader>
             <CardContent>
-              <Input v-model="prize" placeholder="E.g. a movie voucher" />
+              <form class="flex gap-2" @submit.prevent="applyPrize">
+                <Input v-model="prizeText" placeholder="E.g. a movie voucher" />
+                <Button type="submit">Add prize</Button>
+              </form>
+              <p v-if="prize" class="mt-3 font-mono text-xs text-muted-foreground">
+                Current prize: <span class="text-foreground">{{ prize }}</span>
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -211,8 +242,13 @@ function onSpinComplete(index: number) {
 
           <Card>
             <CardHeader>
-              <CardTitle>04 &middot; Log</CardTitle>
-              <CardDescription v-if="!winners.length">No draws have been made yet.</CardDescription>
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <CardTitle>04 &middot; Log</CardTitle>
+                  <CardDescription v-if="!winners.length">No draws have been made yet.</CardDescription>
+                </div>
+                <Button v-if="winners.length" variant="outline" size="sm" @click="clearLog">Clear log</Button>
+              </div>
             </CardHeader>
             <CardContent v-if="winners.length">
               <Table>
