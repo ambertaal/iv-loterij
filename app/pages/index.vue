@@ -1,6 +1,20 @@
 <script setup lang="ts">
-import { UserPlus, Users, Gift, Sparkles, ScrollText, PartyPopper, Download } from '@lucide/vue'
+import { UserPlus, Users, Gift, Sparkles, ScrollText, PartyPopper, Download, Lock } from '@lucide/vue'
 import { winnersToCsv } from '../utils/csv'
+
+const { isAdmin, error: authError, login, logout } = useAdminAuth()
+const showLoginDialog = ref(false)
+const loginEmail = ref('')
+const loginPassword = ref('')
+
+async function submitLogin() {
+  const ok = await login(loginEmail.value, loginPassword.value)
+  if (ok) {
+    showLoginDialog.value = false
+    loginEmail.value = ''
+    loginPassword.value = ''
+  }
+}
 
 const {
   participants,
@@ -160,14 +174,34 @@ function onSpinComplete(index: number) {
             <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Lottery</h1>
           </div>
         </div>
-        <div class="flex gap-8 font-mono text-sm">
-          <div>
-            <p class="text-muted-foreground">Participants</p>
-            <p class="text-2xl font-semibold">{{ participants.length }}</p>
+        <div class="flex items-center gap-8">
+          <div class="flex gap-8 font-mono text-sm">
+            <div>
+              <p class="text-muted-foreground">Participants</p>
+              <p class="text-2xl font-semibold">{{ participants.length }}</p>
+            </div>
+            <div>
+              <p class="text-muted-foreground">Draws</p>
+              <p class="text-2xl font-semibold">{{ drawCount }}</p>
+            </div>
           </div>
-          <div>
-            <p class="text-muted-foreground">Draws</p>
-            <p class="text-2xl font-semibold">{{ drawCount }}</p>
+
+          <div class="flex items-center gap-3 font-mono text-xs">
+            <template v-if="isAdmin">
+              <span class="flex items-center gap-1.5 text-primary">
+                <Lock class="h-3.5 w-3.5" />
+                Admin
+              </span>
+              <Button variant="outline" size="sm" @click="logout">Log out</Button>
+            </template>
+            <button
+              v-else
+              type="button"
+              class="text-muted-foreground underline-offset-4 hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              @click="showLoginDialog = true"
+            >
+              Admin login
+            </button>
           </div>
         </div>
       </header>
@@ -206,7 +240,7 @@ function onSpinComplete(index: number) {
               <Textarea v-model="namesText" :rows="6" />
               <div class="flex flex-wrap gap-2">
                 <Button variant="default" @click="applyNames">Update list</Button>
-                <Button variant="outline" @click="clearAll">Clear all</Button>
+                <Button v-if="isAdmin" variant="outline" @click="clearAll">Clear all</Button>
               </div>
 
               <div v-if="participants.length" class="flex max-h-44 flex-wrap gap-2 overflow-y-auto pr-1">
@@ -269,10 +303,13 @@ function onSpinComplete(index: number) {
                 @spin-start="onSpinStart"
                 @spin-complete="onSpinComplete"
               />
-              <p v-if="!canDraw" class="font-mono text-sm text-muted-foreground">
+              <p v-if="isAdmin && !canDraw" class="font-mono text-sm text-muted-foreground">
                 Add at least 2 names to be able to draw.
               </p>
-              <Button size="lg" :disabled="!canDraw || isSpinning" @click="draw">
+              <p v-else-if="!isAdmin" class="font-mono text-sm text-muted-foreground">
+                Only the admin can draw a winner.
+              </p>
+              <Button v-if="isAdmin" size="lg" :disabled="!canDraw || isSpinning" @click="draw">
                 {{ isSpinning ? 'Wheel spinning…' : 'Draw a winner' }}
               </Button>
             </CardContent>
@@ -288,7 +325,7 @@ function onSpinComplete(index: number) {
                   </CardTitle>
                   <CardDescription v-if="!winners.length">No draws have been made yet.</CardDescription>
                 </div>
-                <div v-if="winners.length" class="flex flex-wrap gap-2">
+                <div v-if="winners.length && isAdmin" class="flex flex-wrap gap-2">
                   <Button variant="outline" size="sm" @click="exportLogCsv">
                     <Download class="h-4 w-4" />
                     Export CSV
@@ -349,6 +386,32 @@ function onSpinComplete(index: number) {
             <Button class="w-full sm:w-auto">Close</Button>
           </DialogClose>
         </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <!-- admin login dialog -->
+    <Dialog v-model:open="showLoginDialog">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Admin login</DialogTitle>
+        </DialogHeader>
+        <form class="flex flex-col gap-4" @submit.prevent="submitLogin">
+          <div class="flex flex-col gap-2">
+            <Label for="admin-email">Email</Label>
+            <Input id="admin-email" v-model="loginEmail" type="email" autocomplete="username" required />
+          </div>
+          <div class="flex flex-col gap-2">
+            <Label for="admin-password">Password</Label>
+            <Input id="admin-password" v-model="loginPassword" type="password" autocomplete="current-password" required />
+          </div>
+          <p v-if="authError" class="font-mono text-xs text-destructive">{{ authError }}</p>
+          <DialogFooter>
+            <DialogClose>
+              <Button type="button" variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button type="submit">Log in</Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   </div>
